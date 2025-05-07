@@ -51,7 +51,7 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    #businessMessage, #valueEstimate { text-align: center; font-size: 18px; }
+    #businessMessage, #valueEstimate { text-align: center; font-size: 18px; display: none; }
   </style>
 </head>
 <body>
@@ -120,13 +120,13 @@
       </div>
 
       <!-- Wiadomość biznes -->
-      <div id="businessMessage" class="question">
+      <div id="businessMessage">
         <p>W przypadku odkupu większej liczby urządzeń prosimy o kontakt:</p>
         <p><a href="mailto:sklep@kompre.pl">sklep@kompre.pl</a></p>
       </div>
 
       <!-- Wycena końcowa -->
-      <div id="valueEstimate" class="question">
+      <div id="valueEstimate">
         <p><strong>Wartość Twojego urządzenia: 0 zł</strong></p>
         <p>Jeśli urządzenie się nie uruchamia, nie jesteśmy w stanie go wycenić.</p>
       </div>
@@ -146,18 +146,29 @@
     document.addEventListener('DOMContentLoaded', () => {
       const questions = Array.from(document.querySelectorAll('.question'));
       let currentStep = 0;
-      let deviceValue = 1;
+
+      const businessMessage = document.getElementById('businessMessage');
+      const valueEstimate = document.getElementById('valueEstimate');
+      const form = document.getElementById('buyback-form');
 
       const showStep = (step) => {
-        questions.forEach(q => { q.style.display = 'none'; q.classList.remove('active'); });
-        questions[step].style.display = 'block';
-        setTimeout(() => questions[step].classList.add('active'), 10);
-        document.getElementById('btn-prev').style.display = (step > 0 && questions[step].id !== 'businessMessage') ? 'inline-block' : 'none';
-        document.getElementById('btn-next').style.display = (step < questions.length - 1 && questions[step].id !== 'businessMessage' && questions[step].id !== 'valueEstimate') ? 'inline-block' : 'none';
-        document.getElementById('btn-submit').style.display = (questions[step].id === 'question6') ? 'inline-block' : 'none';
+        questions.forEach((q, i) => {
+          q.style.display = 'none';
+          q.classList.remove('active');
+        });
+        if (questions[step]) {
+          questions[step].style.display = 'block';
+          setTimeout(() => questions[step].classList.add('active'), 10);
+        }
+
+        businessMessage.style.display = 'none';
+        valueEstimate.style.display = 'none';
+
+        document.getElementById('btn-prev').style.display = (step > 0) ? 'inline-block' : 'none';
+        document.getElementById('btn-next').style.display = (step < questions.length - 1) ? 'inline-block' : 'none';
+        document.getElementById('btn-submit').style.display = (questions[step]?.id === 'question6') ? 'inline-block' : 'none';
       };
 
-      const form = document.getElementById('buyback-form');
       showStep(currentStep);
 
       document.getElementById('btn-next').addEventListener('click', () => {
@@ -165,13 +176,21 @@
         if (!Array.from(inputs).some(i => i.checked)) return alert('Proszę zaznaczyć odpowiedź.');
 
         if (currentStep === 0 && form.clientType.value === 'business') {
-          currentStep = questions.findIndex(q => q.id === 'businessMessage');
-          showStep(currentStep); return;
+          questions.forEach(q => q.style.display = 'none');
+          document.getElementById('btn-prev').style.display = 'none';
+          document.getElementById('btn-next').style.display = 'none';
+          document.getElementById('btn-submit').style.display = 'none';
+          businessMessage.style.display = 'block';
+          return;
         }
 
         if (currentStep === 3 && form.power.value === 'nie') {
-          currentStep = questions.findIndex(q => q.id === 'valueEstimate');
-          showStep(currentStep); return;
+          questions.forEach(q => q.style.display = 'none');
+          document.getElementById('btn-prev').style.display = 'none';
+          document.getElementById('btn-next').style.display = 'none';
+          document.getElementById('btn-submit').style.display = 'none';
+          valueEstimate.style.display = 'block';
+          return;
         }
 
         currentStep++;
