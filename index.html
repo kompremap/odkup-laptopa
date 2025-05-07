@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Formularz odkupu laptopów</title>
+  <style>
+    body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+    #logo { text-align: center; margin-bottom: 20px; }
+    #quiz { max-width: 600px; margin: auto; }
+    .question { display: none; opacity: 0; transition: opacity 0.3s ease; }
+    .question.active { display: block; opacity: 1; }
+    .answer, .checkbox-label {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #f5f5f5;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      text-align: left;
+    }
+    .answer:hover, .checkbox-label:hover { background-color: #e0e0e0; }
+    #controls { max-width: 600px; margin: 20px auto; text-align: center; }
+    .btn {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #f5f5f5;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .btn:hover { background-color: #e0e0e0; }
+    #loading-spinner {
+      display: none;
+      margin: 20px auto;
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div id="logo">
+    <h1>Formularz odkupu laptopów</h1>
+  </div>
+
+  <div id="quiz">
+    <form id="buyback-form">
+      <div id="question1" class="question active">
+        <p><strong>1. Czy urządzenie się włącza i działa przez minimum 10 sekund?</strong></p>
+        <label class="answer"><input type="radio" name="power" value="tak" required> Tak</label>
+        <label class="answer"><input type="radio" name="power" value="nie"> Nie</label>
+      </div>
+
+      <div id="question2" class="question">
+        <p><strong>2. Czy ekran spełnia poniższe kryteria?</strong></p>
+        <ul>
+          <li>Ekran i podświetlenie ekranu włączają się.</li>
+          <li>Brak uszkodzeń (pęknięcia, odklejająca się powłoka, migotanie, pasy).</li>
+        </ul>
+        <label class="answer"><input type="radio" name="screen" value="tak" required> Tak</label>
+        <label class="answer"><input type="radio" name="screen" value="nie"> Nie</label>
+      </div>
+
+      <div id="question3" class="question">
+        <p><strong>3. Stan obudowy:</strong></p>
+        <label class="answer"><input type="radio" name="case" value="jak nowa" required> Jak nowa</label>
+        <label class="answer"><input type="radio" name="case" value="normalne ślady użytkowania"> Normalne ślady użytkowania</label>
+        <label class="answer"><input type="radio" name="case" value="pęknięcia lub brak klawiszy"> Pęknięcia lub brak klawiszy</label>
+      </div>
+
+      <div id="question4" class="question">
+        <p><strong>4. W zestawie (wybierz wszystkie pasujące):</strong></p>
+        <label class="checkbox-label"><input type="checkbox" name="extras" value="bateria"> Bateria</label>
+        <label class="checkbox-label"><input type="checkbox" name="extras" value="zasilacz"> Zasilacz</label>
+      </div>
+
+      <div id="controls">
+        <div id="loading-spinner"></div>
+        <button type="button" id="btn-prev" class="btn">Wstecz</button>
+        <button type="button" id="btn-next" class="btn">Dalej</button>
+        <button type="submit" id="btn-submit" class="btn">Wyślij</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const questions = Array.from(document.querySelectorAll('.question'));
+      let currentStep = 0;
+
+      const showStep = (step) => {
+        questions.forEach((q, i) => {
+          q.style.display = 'none';
+          q.classList.remove('active');
+        });
+        questions[step].style.display = 'block';
+        setTimeout(() => questions[step].classList.add('active'), 10);
+
+        document.getElementById('btn-prev').style.display = step > 0 ? 'inline-block' : 'none';
+        document.getElementById('btn-next').style.display = step < questions.length - 1 ? 'inline-block' : 'none';
+        document.getElementById('btn-submit').style.display = step === questions.length - 1 ? 'inline-block' : 'none';
+      };
+
+      showStep(currentStep);
+
+      document.getElementById('btn-next').addEventListener('click', () => {
+        // opcjonalna walidacja: upewnij się, że wybrano odpowiedź
+        const inputs = questions[currentStep].querySelectorAll('input');
+        const valid = Array.from(inputs).some(i => i.checked);
+        if (!valid) return alert('Proszę zaznaczyć odpowiedź.');
+        currentStep++;
+        showStep(currentStep);
+      });
+
+      document.getElementById('btn-prev').addEventListener('click', () => {
+        currentStep--;
+        showStep(currentStep);
+      });
+
+      document.getElementById('buyback-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        document.getElementById('loading-spinner').style.display = 'block';
+        // tutaj można wysłać dane np. przez AJAX
+        setTimeout(() => {
+          alert('Formularz został wysłany. Dziękujemy!');
+          document.getElementById('loading-spinner').style.display = 'none';
+        }, 1000);
+      });
+    });
+  </script>
+</body>
+</html>
