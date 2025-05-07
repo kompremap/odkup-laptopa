@@ -64,8 +64,59 @@
 
   <div id="quiz">
     <form id="buyback-form">
-      <!-- Pytania ... (pozostają bez zmian) -->
-      <!-- ... -->
+      <div class="question active" id="question0">
+        <p><strong>1. Kto sprzedaje laptopa?</strong></p>
+        <label class="answer"><input type="radio" name="clientType" value="private" required> Osoba prywatna</label>
+        <label class="answer"><input type="radio" name="clientType" value="business"> Firma</label>
+      </div>
+
+      <div class="question" id="question1">
+        <p><strong>2. Rocznik laptopa</strong></p>
+        <label class="answer"><input type="radio" name="year" value="2021-2025" required> 2021–2025</label>
+        <label class="answer"><input type="radio" name="year" value="2016-2020"> 2016–2020</label>
+        <label class="answer"><input type="radio" name="year" value="<2016"> Starszy niż 2016</label>
+      </div>
+
+      <div class="question" id="question2">
+        <p><strong>3. Producent laptopa</strong></p>
+        <label class="answer"><input type="radio" name="brand" value="main"> Dell, HP, Lenovo, Fujitsu, Toshiba, Samsung</label>
+        <label class="answer"><input type="radio" name="brand" value="other"> Inny</label>
+      </div>
+
+      <div class="question" id="question3">
+        <p><strong>4. Czy urządzenie się włącza i działa przez minimum 10 sekund?</strong></p>
+        <label class="answer"><input type="radio" name="power" value="tak"> Tak</label>
+        <label class="answer"><input type="radio" name="power" value="nie"> Nie</label>
+      </div>
+
+      <div class="question" id="question4">
+        <p><strong>5. Czy ekran jest sprawny?</strong></p>
+        <label class="answer"><input type="radio" name="screen" value="tak"> Tak</label>
+        <label class="answer"><input type="radio" name="screen" value="nie"> Nie</label>
+      </div>
+
+      <div class="question" id="question5">
+        <p><strong>6. Stan obudowy</strong></p>
+        <label class="answer"><input type="radio" name="case" value="idealny"> Jak nowa</label>
+        <label class="answer"><input type="radio" name="case" value="dobry"> Normalne ślady użytkowania</label>
+        <label class="answer"><input type="radio" name="case" value="zly"> Pęknięcia lub brak klawiszy</label>
+      </div>
+
+      <div class="question" id="question6">
+        <p><strong>7. Co zawiera zestaw?</strong></p>
+        <label class="checkbox-label"><input type="checkbox" name="extras" value="bateria"> Bateria (min. 30 min działania)</label>
+        <label class="checkbox-label"><input type="checkbox" name="extras" value="zasilacz"> Zasilacz</label>
+      </div>
+
+      <div id="businessMessage">
+        <p>W przypadku odkupu większej liczby urządzeń prosimy o kontakt:</p>
+        <p><a href="mailto:sklep@kompre.pl">sklep@kompre.pl</a></p>
+      </div>
+
+      <div id="valueEstimate">
+        <p><strong>Wartość Twojego urządzenia: 0 zł</strong></p>
+        <p>Jeśli urządzenie się nie uruchamia, nie jesteśmy w stanie go wycenić.</p>
+      </div>
 
       <div id="offerSummary">
         <p><strong>Wartość Twojego urządzenia: <span id="finalValue">0 zł</span></strong></p>
@@ -92,18 +143,20 @@
 
       const businessMessage = document.getElementById('businessMessage');
       const valueEstimate = document.getElementById('valueEstimate');
+      const offerSummary = document.getElementById('offerSummary');
+      const finalValue = document.getElementById('finalValue');
+      const offerCode = document.getElementById('offerCode');
       const form = document.getElementById('buyback-form');
 
       const showStep = (step) => {
-        questions.forEach((q) => { q.style.display = 'none'; q.classList.remove('active'); });
+        questions.forEach(q => { q.style.display = 'none'; q.classList.remove('active'); });
         if (questions[step]) {
           questions[step].style.display = 'block';
-          setTimeout(() => questions[step].classList.add('active'), 10);
+          questions[step].classList.add('active');
         }
-
         businessMessage.style.display = 'none';
         valueEstimate.style.display = 'none';
-        document.getElementById('offerSummary').style.display = 'none';
+        offerSummary.style.display = 'none';
 
         document.getElementById('btn-prev').style.display = step > 0 ? 'inline-block' : 'none';
         document.getElementById('btn-next').style.display = (step < questions.length - 1) ? 'inline-block' : 'none';
@@ -144,15 +197,30 @@
       });
 
       document.getElementById('btn-calculate').addEventListener('click', () => {
+        let value = 0;
+
+        if (form.year.value === '2021-2025') value += 500;
+        else if (form.year.value === '2016-2020') value += 300;
+        else value += 100;
+
+        if (form.screen.value === 'tak') value += 150;
+        if (form.case.value === 'idealny') value += 150;
+        else if (form.case.value === 'dobry') value += 100;
+        if (form['extras'].length) {
+          const extras = form.querySelectorAll('input[name="extras"]:checked');
+          extras.forEach(e => value += (e.value === 'bateria') ? 50 : 30);
+        }
+
+        finalValue.innerText = value + ' zł';
+
+        const code = 'KOMP-LAP-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+        offerCode.innerText = code;
+
         questions.forEach(q => q.style.display = 'none');
         document.getElementById('btn-prev').style.display = 'none';
         document.getElementById('btn-next').style.display = 'none';
         document.getElementById('btn-calculate').style.display = 'none';
-        document.getElementById('offerSummary').style.display = 'block';
-
-        // Wygeneruj kod rabatowy dynamicznie (tu przykładowy statyczny)
-        const code = 'KOMP-LAP-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-        document.getElementById('offerCode').innerText = code;
+        offerSummary.style.display = 'block';
       });
 
       document.getElementById('btn-back').addEventListener('click', () => {
