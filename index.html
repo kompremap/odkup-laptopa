@@ -7,6 +7,7 @@
   <style>
     body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
     #logo { text-align: center; margin-bottom: 20px; }
+    #logo img { max-width: 200px; }
     #quiz { max-width: 600px; margin: auto; }
     .question { display: none; opacity: 0; transition: opacity 0.3s ease; }
     .question.active { display: block; opacity: 1; }
@@ -54,7 +55,7 @@
 </head>
 <body>
   <div id="logo">
-    <h1>Formularz odkupu laptopów</h1>
+    <img src="https://kompre.pl/skins/store_user/store_9cd390f998d36daee08a824eb4f4c853_1/images/logo.png" alt="Kompre logo">
   </div>
 
   <div id="quiz">
@@ -93,6 +94,7 @@
         <button type="button" id="btn-prev" class="btn">Wstecz</button>
         <button type="button" id="btn-next" class="btn">Dalej</button>
         <button type="submit" id="btn-submit" class="btn">Wyślij</button>
+        <button type="button" id="btn-back" class="btn">Powrót do Kompre</button>
       </div>
     </form>
   </div>
@@ -118,7 +120,6 @@
       showStep(currentStep);
 
       document.getElementById('btn-next').addEventListener('click', () => {
-        // opcjonalna walidacja: upewnij się, że wybrano odpowiedź
         const inputs = questions[currentStep].querySelectorAll('input');
         const valid = Array.from(inputs).some(i => i.checked);
         if (!valid) return alert('Proszę zaznaczyć odpowiedź.');
@@ -134,11 +135,14 @@
       document.getElementById('buyback-form').addEventListener('submit', (e) => {
         e.preventDefault();
         document.getElementById('loading-spinner').style.display = 'block';
-        // tutaj można wysłać dane np. przez AJAX
         setTimeout(() => {
           alert('Formularz został wysłany. Dziękujemy!');
           document.getElementById('loading-spinner').style.display = 'none';
         }, 1000);
+      });
+
+      document.getElementById('btn-back').addEventListener('click', () => {
+        window.location.href = 'https://kompre.pl';
       });
     });
   </script>
