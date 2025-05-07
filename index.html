@@ -64,49 +64,65 @@
 
   <div id="quiz">
     <form id="buyback-form">
-      <div class="question active" id="question0">
-        <p><strong>1. Kto sprzedaje laptopa?</strong></p>
-        <label class="answer"><input type="radio" name="clientType" value="private" required> Osoba prywatna</label>
-        <label class="answer"><input type="radio" name="clientType" value="business"> Firma</label>
-      </div>
+  <!-- 1. Typ klienta -->
+  <div id="question0" class="question active">
+    <p><strong>1. Kto sprzedaje laptopa?</strong></p>
+    <p style="font-size: 16px; color: #555; margin-bottom: 10px;">
+      Sprzedaj laptopa, a my odwdzięczymy się kodem rabatowym na zakupy w <strong>Kompre.pl</strong>!
+    </p>
+    <label class="answer"><input type="radio" name="clientType" value="private" required> Osoba prywatna – mam jedno urządzenie</label>
+    <label class="answer"><input type="radio" name="clientType" value="business"> Firma – mam więcej niż jedno urządzenie</label>
+  </div>
 
-      <div class="question" id="question1">
-        <p><strong>2. Rocznik laptopa</strong></p>
-        <label class="answer"><input type="radio" name="year" value="2021-2025" required> 2021–2025</label>
-        <label class="answer"><input type="radio" name="year" value="2016-2020"> 2016–2020</label>
-        <label class="answer"><input type="radio" name="year" value="<2016"> Starszy niż 2016</label>
-      </div>
+  <!-- 2. Rocznik laptopa -->
+  <div id="question1" class="question">
+    <p><strong>2. Rocznik laptopa</strong></p>
+    <label class="answer"><input type="radio" name="year" value="2021-2025" required> 2021 – 2025</label>
+    <label class="answer"><input type="radio" name="year" value="2020-2016"> 2020 – 2016</label>
+    <label class="answer"><input type="radio" name="year" value="<2016"> Starsze niż 2016</label>
+  </div>
 
-      <div class="question" id="question2">
-        <p><strong>3. Producent laptopa</strong></p>
-        <label class="answer"><input type="radio" name="brand" value="main"> Dell, HP, Lenovo, Fujitsu, Toshiba, Samsung</label>
-        <label class="answer"><input type="radio" name="brand" value="other"> Inny</label>
-      </div>
+  <!-- 3. Producent laptopa -->
+  <div id="question2" class="question">
+    <p><strong>3. Producent laptopa</strong></p>
+    <label class="answer"><input type="radio" name="brand" value="main" required> Dell, HP, Lenovo, Fujitsu, Toshiba, Samsung</label>
+    <label class="answer"><input type="radio" name="brand" value="other"> Inny</label>
+  </div>
 
-      <div class="question" id="question3">
-        <p><strong>4. Czy urządzenie się włącza i działa przez minimum 10 sekund?</strong></p>
-        <label class="answer"><input type="radio" name="power" value="tak"> Tak</label>
-        <label class="answer"><input type="radio" name="power" value="nie"> Nie</label>
-      </div>
+  <!-- 4. Power -->
+  <div id="question3" class="question">
+    <p><strong>4. Czy urządzenie się włącza i działa przez minimum 10 sekund?</strong></p>
+    <label class="answer"><input type="radio" name="power" value="tak" required> Tak</label>
+    <label class="answer"><input type="radio" name="power" value="nie"> Nie</label>
+  </div>
 
-      <div class="question" id="question4">
-        <p><strong>5. Czy ekran jest sprawny?</strong></p>
-        <label class="answer"><input type="radio" name="screen" value="tak"> Tak</label>
-        <label class="answer"><input type="radio" name="screen" value="nie"> Nie</label>
-      </div>
+  <!-- 5. Stan ekranu -->
+  <div id="question4" class="question">
+    <p><strong>5. Czy ekran spełnia oba poniższe kryteria?</strong></p>
+    <ul>
+      <li>Ekran i podświetlenie się włączają</li>
+      <li>Brak uszkodzeń (pęknięcia, odklejająca się powłoka, migotanie, pasy)</li>
+    </ul>
+    <label class="answer"><input type="radio" name="screen" value="tak" required> Tak</label>
+    <label class="answer"><input type="radio" name="screen" value="nie"> Nie</label>
+  </div>
 
-      <div class="question" id="question5">
-        <p><strong>6. Stan obudowy</strong></p>
-        <label class="answer"><input type="radio" name="case" value="idealny"> Jak nowa</label>
-        <label class="answer"><input type="radio" name="case" value="dobry"> Normalne ślady użytkowania</label>
-        <label class="answer"><input type="radio" name="case" value="zly"> Pęknięcia lub brak klawiszy</label>
-      </div>
+  <!-- 6. Stan obudowy -->
+  <div id="question5" class="question">
+    <p><strong>6. Stan obudowy</strong></p>
+    <label class="answer"><input type="radio" name="case" value="jak nowa" required> Jak nowa</label>
+    <label class="answer"><input type="radio" name="case" value="normalne ślady użytkowania"> Normalne ślady użytkowania</label>
+    <label class="answer"><input type="radio" name="case" value="pęknięcia lub brak klawiszy"> Pęknięcia lub brak klawiszy</label>
+  </div>
 
-      <div class="question" id="question6">
-        <p><strong>7. Co zawiera zestaw?</strong></p>
-        <label class="checkbox-label"><input type="checkbox" name="extras" value="bateria"> Bateria (min. 30 min działania)</label>
-        <label class="checkbox-label"><input type="checkbox" name="extras" value="zasilacz"> Zasilacz</label>
-      </div>
+  <!-- 7. Zestaw -->
+  <div id="question6" class="question">
+    <p><strong>7. W zestawie</strong><br>Wybierz elementy, które działają sprawnie (np. bateria działa min. 30 minut):</p>
+    <label class="checkbox-label"><input type="checkbox" name="extras" value="bateria"> Bateria (sprawna, min. 30 minut działania)</label>
+    <label class="checkbox-label"><input type="checkbox" name="extras" value="zasilacz"> Zasilacz</label>
+  </div>
+</form>
+
 
       <div id="businessMessage">
         <p>W przypadku odkupu większej liczby urządzeń prosimy o kontakt:</p>
