@@ -6,8 +6,9 @@
   <title>Formularz odkupu laptopów</title>
   <style>
     body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
-    #logo { text-align: center; margin-bottom: 20px; }
+    #logo { text-align: center; margin-bottom: 10px; }
     #logo img { max-width: 200px; }
+    #info { text-align: center; margin-bottom: 20px; font-size: 18px; color: #333; }
     #quiz { max-width: 600px; margin: auto; }
     .question { display: none; opacity: 0; transition: opacity 0.3s ease; }
     .question.active { display: block; opacity: 1; }
@@ -59,14 +60,20 @@
     <img src="https://kompre.pl/skins/store_user/store_9cd390f998d36daee08a824eb4f4c853_1/images/logo.png" alt="Kompre logo">
   </div>
 
+  <div id="info">
+    Sprzedaj nam swojego laptopa i odbierz <strong>kod rabatowy</strong> na zakupy w sklepie <a href="https://kompre.pl">kompre.pl</a>!
+  </div>
+
   <div id="quiz">
     <form id="buyback-form">
+      <!-- 1. Typ klienta -->
       <div id="question0" class="question active">
-        <p><strong>1. Czy jesteś osobą prywatną (1 urządzenie) czy firmą (więcej sztuk)?</strong></p>
-        <label class="answer"><input type="radio" name="clientType" value="private" required> Osoba prywatna (1 urządzenie)</label>
-        <label class="answer"><input type="radio" name="clientType" value="business"> Biznes (więcej sztuk)</label>
+        <p><strong>1. Kto sprzedaje laptopa?</strong></p>
+        <label class="answer"><input type="radio" name="clientType" value="private" required> Osoba prywatna – mam jedno urządzenie</label>
+        <label class="answer"><input type="radio" name="clientType" value="business"> Firma – mam więcej niż jedno urządzenie</label>
       </div>
 
+      <!-- 2. Rocznik -->
       <div id="question1" class="question">
         <p><strong>2. Rocznik laptopa</strong><br>Wybierz przedział, w którym wyszedł procesor Intel Core i5:</p>
         <label class="answer"><input type="radio" name="year" value="2024-2022" required> 2024 – 2022 (np. Intel Core i5-1240P)</label>
@@ -75,18 +82,21 @@
         <label class="answer"><input type="radio" name="year" value="2015-i-starsze"> 2015 i starsze (np. Intel Core i5-5200U)</label>
       </div>
 
+      <!-- 3. Producent -->
       <div id="question2" class="question">
         <p><strong>3. Producent laptopa</strong></p>
-        <label class="answer"><input type="radio" name="brand" value="główne" required> Dell, HP, Lenovo, Fujitsu, Toshiba, Samsung</label>
-        <label class="answer"><input type="radio" name="brand" value="inny"> Inny</label>
+        <label class="answer"><input type="radio" name="brand" value="main" required> Dell, HP, Lenovo, Fujitsu, Toshiba, Samsung</label>
+        <label class="answer"><input type="radio" name="brand" value="other"> Inny</label>
       </div>
 
+      <!-- 4. Urządzenie się włącza -->
       <div id="question3" class="question">
         <p><strong>4. Czy urządzenie się włącza i działa przez minimum 10 sekund?</strong></p>
         <label class="answer"><input type="radio" name="power" value="tak" required> Tak</label>
         <label class="answer"><input type="radio" name="power" value="nie"> Nie</label>
       </div>
 
+      <!-- 5. Stan ekranu -->
       <div id="question4" class="question">
         <p><strong>5. Czy ekran spełnia oba poniższe kryteria?</strong></p>
         <ul>
@@ -97,6 +107,7 @@
         <label class="answer"><input type="radio" name="screen" value="nie"> Nie</label>
       </div>
 
+      <!-- 6. Stan obudowy -->
       <div id="question5" class="question">
         <p><strong>6. Stan obudowy</strong></p>
         <label class="answer"><input type="radio" name="case" value="jak nowa" required> Jak nowa</label>
@@ -104,17 +115,20 @@
         <label class="answer"><input type="radio" name="case" value="pęknięcia lub brak klawiszy"> Pęknięcia lub brak klawiszy</label>
       </div>
 
+      <!-- 7. W zestawie -->
       <div id="question6" class="question">
         <p><strong>7. W zestawie (możesz zaznaczyć oba lub żaden)</strong></p>
         <label class="checkbox-label"><input type="checkbox" name="extras" value="bateria"> Bateria</label>
         <label class="checkbox-label"><input type="checkbox" name="extras" value="zasilacz"> Zasilacz</label>
       </div>
 
+      <!-- Wiadomość dla biznesu -->
       <div id="businessMessage" class="question">
         <p>W przypadku odkupu większej liczby urządzeń prosimy o kontakt:</p>
         <p><a href="mailto:sklep@kompre.pl">sklep@kompre.pl</a></p>
       </div>
 
+      <!-- Kontrolki -->
       <div id="controls">
         <div id="loading-spinner"></div>
         <button type="button" id="btn-prev" class="btn">Wstecz</button>
@@ -131,14 +145,10 @@
       let currentStep = 0;
 
       const showStep = (step) => {
-        questions.forEach((q, i) => {
-          q.style.display = 'none';
-          q.classList.remove('active');
-        });
+        questions.forEach(q => { q.style.display = 'none'; q.classList.remove('active'); });
         questions[step].style.display = 'block';
         setTimeout(() => questions[step].classList.add('active'), 10);
-
-        document.getElementById('btn-prev').style.display = step > 0 && questions[step].id !== 'businessMessage' ? 'inline-block' : 'none';
+        document.getElementById('btn-prev').style.display = (step > 0 && questions[step].id !== 'businessMessage') ? 'inline-block' : 'none';
         document.getElementById('btn-next').style.display = (step < questions.length - 1 && questions[step].id !== 'businessMessage') ? 'inline-block' : 'none';
         document.getElementById('btn-submit').style.display = (questions[step].id === 'question6') ? 'inline-block' : 'none';
       };
@@ -148,36 +158,21 @@
 
       document.getElementById('btn-next').addEventListener('click', () => {
         const inputs = questions[currentStep].querySelectorAll('input');
-        const valid = Array.from(inputs).some(i => i.checked);
-        if (!valid) return alert('Proszę zaznaczyć odpowiedź.');
-
+        if (!Array.from(inputs).some(i => i.checked)) return alert('Proszę zaznaczyć odpowiedź.');
         if (currentStep === 0 && form.clientType.value === 'business') {
-          currentStep = questions.findIndex(q => q.id === 'businessMessage');
-          showStep(currentStep);
-          return;
+          currentStep = questions.findIndex(q => q.id === 'businessMessage'); showStep(currentStep); return;
         }
-
-        currentStep++;
-        showStep(currentStep);
+        currentStep++; showStep(currentStep);
       });
 
-      document.getElementById('btn-prev').addEventListener('click', () => {
-        currentStep--;
-        showStep(currentStep);
+      document.getElementById('btn-prev').addEventListener('click', () => { currentStep--; showStep(currentStep); });
+
+      form.addEventListener('submit', e => {
+        e.preventDefault(); document.getElementById('loading-spinner').style.display = 'block';
+        setTimeout(() => { alert('Formularz został wysłany. Dziękujemy!'); document.getElementById('loading-spinner').style.display = 'none'; }, 1000);
       });
 
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        document.getElementById('loading-spinner').style.display = 'block';
-        setTimeout(() => {
-          alert('Formularz został wysłany. Dziękujemy!');
-          document.getElementById('loading-spinner').style.display = 'none';
-        }, 1000);
-      });
-
-      document.getElementById('btn-back').addEventListener('click', () => {
-        window.location.href = 'https://kompre.pl';
-      });
+      document.getElementById('btn-back').addEventListener('click', () => { window.location.href = 'https://kompre.pl'; });
     });
   </script>
 </body>
