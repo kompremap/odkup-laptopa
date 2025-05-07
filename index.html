@@ -61,44 +61,55 @@
 
   <div id="quiz">
     <form id="buyback-form">
-      <!-- Nowe pytanie 1 -->
       <div id="question0" class="question active">
         <p><strong>1. Czy jesteś osobą prywatną (1 urządzenie) czy firmą (więcej sztuk)?</strong></p>
         <label class="answer"><input type="radio" name="clientType" value="private" required> Osoba prywatna (1 urządzenie)</label>
         <label class="answer"><input type="radio" name="clientType" value="business"> Biznes (więcej sztuk)</label>
       </div>
 
-      <!-- Istniejące pytania (przesunięte o 1) -->
       <div id="question1" class="question">
-        <p><strong>2. Czy urządzenie się włącza i działa przez minimum 10 sekund?</strong></p>
+        <p><strong>2. Rocznik laptopa</strong><br>Wybierz przedział, w którym wyszedł procesor Intel Core i5:</p>
+        <label class="answer"><input type="radio" name="year" value="2024-2022" required> 2024 – 2022 (np. Intel Core i5-1240P)</label>
+        <label class="answer"><input type="radio" name="year" value="2021-2019"> 2021 – 2019 (np. Intel Core i5-1035G1)</label>
+        <label class="answer"><input type="radio" name="year" value="2018-2016"> 2018 – 2016 (np. Intel Core i5-8250U)</label>
+        <label class="answer"><input type="radio" name="year" value="2015-i-starsze"> 2015 i starsze (np. Intel Core i5-5200U)</label>
+      </div>
+
+      <div id="question2" class="question">
+        <p><strong>3. Producent laptopa</strong></p>
+        <label class="answer"><input type="radio" name="brand" value="główne" required> Dell, HP, Lenovo, Fujitsu, Toshiba, Samsung</label>
+        <label class="answer"><input type="radio" name="brand" value="inny"> Inny</label>
+      </div>
+
+      <div id="question3" class="question">
+        <p><strong>4. Czy urządzenie się włącza i działa przez minimum 10 sekund?</strong></p>
         <label class="answer"><input type="radio" name="power" value="tak" required> Tak</label>
         <label class="answer"><input type="radio" name="power" value="nie"> Nie</label>
       </div>
 
-      <div id="question2" class="question">
-        <p><strong>3. Czy ekran spełnia poniższe kryteria?</strong></p>
+      <div id="question4" class="question">
+        <p><strong>5. Czy ekran spełnia oba poniższe kryteria?</strong></p>
         <ul>
-          <li>Ekran i podświetlenie ekranu włączają się.</li>
-          <li>Brak uszkodzeń (pęknięcia, odklejająca się powłoka, migotanie, pasy).</li>
+          <li>Ekran i podświetlenie się włączają</li>
+          <li>Brak uszkodzeń (pęknięcia, odklejająca się powłoka, migotanie, pasy)</li>
         </ul>
         <label class="answer"><input type="radio" name="screen" value="tak" required> Tak</label>
         <label class="answer"><input type="radio" name="screen" value="nie"> Nie</label>
       </div>
 
-      <div id="question3" class="question">
-        <p><strong>4. Stan obudowy:</strong></p>
+      <div id="question5" class="question">
+        <p><strong>6. Stan obudowy</strong></p>
         <label class="answer"><input type="radio" name="case" value="jak nowa" required> Jak nowa</label>
         <label class="answer"><input type="radio" name="case" value="normalne ślady użytkowania"> Normalne ślady użytkowania</label>
         <label class="answer"><input type="radio" name="case" value="pęknięcia lub brak klawiszy"> Pęknięcia lub brak klawiszy</label>
       </div>
 
-      <div id="question4" class="question">
-        <p><strong>5. W zestawie (wybierz wszystkie pasujące):</strong></p>
+      <div id="question6" class="question">
+        <p><strong>7. W zestawie (możesz zaznaczyć oba lub żaden)</strong></p>
         <label class="checkbox-label"><input type="checkbox" name="extras" value="bateria"> Bateria</label>
         <label class="checkbox-label"><input type="checkbox" name="extras" value="zasilacz"> Zasilacz</label>
       </div>
 
-      <!-- Wiadomość dla biznesu -->
       <div id="businessMessage" class="question">
         <p>W przypadku odkupu większej liczby urządzeń prosimy o kontakt:</p>
         <p><a href="mailto:sklep@kompre.pl">sklep@kompre.pl</a></p>
@@ -127,26 +138,20 @@
         questions[step].style.display = 'block';
         setTimeout(() => questions[step].classList.add('active'), 10);
 
-        // Pokaż/ukryj przyciski
         document.getElementById('btn-prev').style.display = step > 0 && questions[step].id !== 'businessMessage' ? 'inline-block' : 'none';
         document.getElementById('btn-next').style.display = (step < questions.length - 1 && questions[step].id !== 'businessMessage') ? 'inline-block' : 'none';
-        document.getElementById('btn-submit').style.display = (questions[step].id === 'question4') ? 'inline-block' : 'none';
+        document.getElementById('btn-submit').style.display = (questions[step].id === 'question6') ? 'inline-block' : 'none';
       };
 
       const form = document.getElementById('buyback-form');
-      const clientTypeInputs = form.elements['clientType'];
-
       showStep(currentStep);
 
       document.getElementById('btn-next').addEventListener('click', () => {
-        // walidacja
         const inputs = questions[currentStep].querySelectorAll('input');
         const valid = Array.from(inputs).some(i => i.checked);
         if (!valid) return alert('Proszę zaznaczyć odpowiedź.');
 
-        // jeśli biznes na kroku 0
         if (currentStep === 0 && form.clientType.value === 'business') {
-          // pokaż wiadomość biznesową
           currentStep = questions.findIndex(q => q.id === 'businessMessage');
           showStep(currentStep);
           return;
