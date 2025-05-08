@@ -137,6 +137,8 @@
       const btnBack   = document.getElementById('btn-back');
       const offerCode = document.getElementById('offerCode');
       const finalPrice= document.getElementById('finalPrice');
+      const businessMessage = document.getElementById('businessMessage');
+      const valueEstimate = document.getElementById('valueEstimate');
 
       const priceMap = {
         '25MB':99,'25MW':98,'25MBZ':90,
@@ -161,20 +163,25 @@
           return alert('Proszę zaznaczyć odpowiedź.');
         }
 
-        // Ukryj poprzednie specjalne komunikaty
-        document.getElementById('businessMessage').classList.remove('active');
-        document.getElementById('valueEstimate').classList.remove('active');
-
-        // Jeśli firma → wyświetl komunikat i zatrzymaj
-        if (currentStep === 0 && form.clientType.value === 'business') {
-          document.getElementById('businessMessage').classList.add('active');
+        // Logika dla pierwszego pytania (kto sprzedaje)
+        if (currentStep === 0) {
+          if (form.elements.clientType.value === 'business') {
+            businessMessage.classList.add('active');
+            [...questions].forEach(q => q.classList.remove('active'));
+            return;
+          }
+          currentStep++;
+          showStep(currentStep);
           return;
         }
 
-        // Jeśli nie uruchamia się → wyświetl komunikat i zatrzymaj
-        if (currentStep === 3 && form.power.value === 'nie') {
-          document.getElementById('valueEstimate').classList.add('active');
-          return;
+        // Logika dla pytania o włączanie się urządzenia
+        if (currentStep === 3) {
+          if (form.elements.power.value === 'nie') {
+            valueEstimate.classList.add('active');
+            [...questions].forEach(q => q.classList.remove('active'));
+            return;
+          }
         }
 
         currentStep++;
@@ -199,7 +206,8 @@
         offerCode.innerText = code;
         finalPrice.innerText = (priceMap[code] || 0) + ' zł';
 
-        showStep(questions.length);
+        questions.forEach(q => q.classList.remove('active'));
+        summary.classList.add('active');
       });
 
       btnRefresh.addEventListener('click', () => location.reload());
