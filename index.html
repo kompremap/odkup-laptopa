@@ -148,8 +148,16 @@
       };
 
       function showStep(i) {
+        // Ukryj wszystkie pytania, komunikaty specjalne i podsumowanie
         [...questions, summary].forEach(el => el.classList.remove('active'));
+        // Ukryj specyficznie komunikaty biznesowe i wyceny
+        businessMessage.classList.remove('active');
+        valueEstimate.classList.remove('active');
+        
+        // Pokaż tylko aktualne pytanie
         if (questions[i]) questions[i].classList.add('active');
+        
+        // Konfiguracja przycisków
         btnPrev.style.display = i > 0 ? 'inline-block' : 'none';
         btnNext.style.display = i < questions.length - 1 ? 'inline-block' : 'none';
         btnCalc.style.display = i === questions.length - 1 ? 'inline-block' : 'none';
@@ -163,23 +171,24 @@
           return alert('Proszę zaznaczyć odpowiedź.');
         }
 
+        // Ukryj wszystkie specjalne komunikaty przed sprawdzeniem warunków
+        businessMessage.classList.remove('active');
+        valueEstimate.classList.remove('active');
+
         // Logika dla pierwszego pytania (kto sprzedaje)
         if (currentStep === 0) {
-          if (form.elements.clientType.value === 'business') {
+          const selectedValue = document.querySelector('input[name="clientType"]:checked').value;
+          if (selectedValue === 'business') {
             businessMessage.classList.add('active');
-            [...questions].forEach(q => q.classList.remove('active'));
             return;
           }
-          currentStep++;
-          showStep(currentStep);
-          return;
         }
 
         // Logika dla pytania o włączanie się urządzenia
         if (currentStep === 3) {
-          if (form.elements.power.value === 'nie') {
+          const powerValue = document.querySelector('input[name="power"]:checked').value;
+          if (powerValue === 'nie') {
             valueEstimate.classList.add('active');
-            [...questions].forEach(q => q.classList.remove('active'));
             return;
           }
         }
@@ -206,8 +215,17 @@
         offerCode.innerText = code;
         finalPrice.innerText = (priceMap[code] || 0) + ' zł';
 
-        questions.forEach(q => q.classList.remove('active'));
+        // Ukryj wszystkie pytania i komunikaty specjalne
+        [...questions].forEach(q => q.classList.remove('active'));
+        businessMessage.classList.remove('active');
+        valueEstimate.classList.remove('active');
+        
+        // Pokaż podsumowanie
         summary.classList.add('active');
+        
+        // Ukryj przyciski "Dalej" i "Sprawdź wycenę", pokaż tylko "Wstecz"
+        btnNext.style.display = 'none';
+        btnCalc.style.display = 'none';
       });
 
       btnRefresh.addEventListener('click', () => location.reload());
