@@ -33,33 +33,6 @@
       font-size: 20px; font-weight: bold; background: #eee; padding: 10px;
       border-radius: 6px; display: inline-block; margin: 10px 0;
     }
-    .price-calculation {
-      background-color: #f8f9fa;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 15px;
-      margin-top: 20px;
-    }
-    .price-calculation h3 {
-      margin-top: 0;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 10px;
-    }
-    .price-calculation ul {
-      list-style: none;
-      padding-left: 0;
-    }
-    .price-calculation li {
-      padding: 5px 0;
-      display: flex;
-      justify-content: space-between;
-    }
-    .price-calculation .total {
-      border-top: 2px solid #ddd;
-      font-weight: bold;
-      margin-top: 10px;
-      padding-top: 10px;
-    }
   </style>
 </head>
 <body>
@@ -137,14 +110,6 @@
     <div id="offerSummary" class="summary">
       <p><strong>Numer zlecenia:</strong> <span id="offerCode">-</span></p>
       <p><strong>Cena całkowita:</strong> <span id="finalPrice">- zł</span></p>
-      
-      <div class="price-calculation">
-        <h3>Szczegóły wyceny</h3>
-        <ul id="priceBreakdown">
-          <!-- Szczegóły wyceny będą wstawione dynamicznie przez JavaScript -->
-        </ul>
-      </div>
-      
       <a href="https://kompre.pl/kontakt" target="_blank" class="btn">Formularz kontaktowy</a>
     </div>
 
@@ -358,48 +323,26 @@
         const caseValue = document.querySelector('input[name="case"]:checked').value;
         const extrasCheckboxes = document.querySelectorAll('input[name="extras"]:checked');
         
-        // Inicjalizacja szczegółów wyceny
-        const priceDetails = [];
         let totalPrice = 0;
         
         // 1. Cena bazowa zależna od rocznika
         const basePrice = priceRules.basePrice[yearValue];
-        priceDetails.push({
-          description: `Laptop ${yearValue}`,
-          value: basePrice
-        });
         totalPrice += basePrice;
         
         // 2. Dodatek za producenta
         const brandBonus = priceRules.brand[brandValue];
-        priceDetails.push({
-          description: `Producent: ${brandValue === 'dell' ? 'Dell' : 'Inny'}`,
-          value: brandBonus
-        });
         totalPrice += brandBonus;
         
         // 3. Dodatek za działanie
         const powerBonus = priceRules.power[powerValue];
-        priceDetails.push({
-          description: `Urządzenie włącza się: ${powerValue === 'tak' ? 'TAK' : 'NIE'}`,
-          value: powerBonus
-        });
         totalPrice += powerBonus;
         
         // 4. Dodatek za ekran
         const screenBonus = priceRules.screen[screenValue];
-        priceDetails.push({
-          description: `Ekran działa poprawnie: ${screenValue === 'tak' ? 'TAK' : 'NIE'}`,
-          value: screenBonus
-        });
         totalPrice += screenBonus;
         
         // 5. Dodatek za stan obudowy
         const caseBonus = priceRules.case[caseValue];
-        priceDetails.push({
-          description: `Stan obudowy: ${caseValue}`,
-          value: caseBonus
-        });
         totalPrice += caseBonus;
         
         // 6. Dodatek za akcesoria
@@ -412,17 +355,9 @@
         
         if (extras.includes('bateria') && extras.includes('zasilacz')) {
           extrasBonus = priceRules.extras.both;
-          priceDetails.push({
-            description: 'Akcesoria: Bateria i zasilacz',
-            value: extrasBonus
-          });
         } else {
           extras.forEach(extra => {
             extrasBonus += priceRules.extras[extra];
-            priceDetails.push({
-              description: `Akcesoria: ${extra === 'bateria' ? 'Bateria' : 'Zasilacz'}`,
-              value: priceRules.extras[extra]
-            });
           });
         }
         totalPrice += extrasBonus;
@@ -433,20 +368,6 @@
         // Aktualizacja podsumowania
         offerCode.innerText = code;
         finalPrice.innerText = totalPrice + ' zł';
-        
-        // Aktualizacja szczegółów wyceny
-        priceBreakdown.innerHTML = '';
-        priceDetails.forEach(detail => {
-          const li = document.createElement('li');
-          li.innerHTML = `<span>${detail.description}</span><span>+${detail.value} zł</span>`;
-          priceBreakdown.appendChild(li);
-        });
-        
-        // Dodanie podsumowania
-        const totalLi = document.createElement('li');
-        totalLi.className = 'total';
-        totalLi.innerHTML = `<span>RAZEM</span><span>${totalPrice} zł</span>`;
-        priceBreakdown.appendChild(totalLi);
 
         // Ukryj wszystkie pytania i komunikaty specjalne
         questions.forEach(q => q.classList.remove('active'));
