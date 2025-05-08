@@ -33,6 +33,33 @@
       font-size: 20px; font-weight: bold; background: #eee; padding: 10px;
       border-radius: 6px; display: inline-block; margin: 10px 0;
     }
+    .price-calculation {
+      background-color: #f8f9fa;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 20px;
+    }
+    .price-calculation h3 {
+      margin-top: 0;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+    .price-calculation ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .price-calculation li {
+      padding: 5px 0;
+      display: flex;
+      justify-content: space-between;
+    }
+    .price-calculation .total {
+      border-top: 2px solid #ddd;
+      font-weight: bold;
+      margin-top: 10px;
+      padding-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -63,8 +90,8 @@
 
       <div id="question2" class="question">
         <p><strong>3. Producent laptopa</strong></p>
-        <label class="answer"><input type="radio" name="brand" value="main" required> Dell, HP, Lenovo, Fujitsu, Toshiba, Samsung</label>
-        <label class="answer"><input type="radio" name="brand" value="other"> Inny</label>
+        <label class="answer"><input type="radio" name="brand" value="dell" required> Dell</label>
+        <label class="answer"><input type="radio" name="brand" value="other"> Inny (HP, Lenovo, Fujitsu, Toshiba, Samsung, itp.)</label>
       </div>
 
       <div id="question3" class="question">
@@ -104,13 +131,20 @@
 
     <div id="valueEstimate" class="special-message">
       <p><strong>Wartość Twojego urządzenia: 0 zł</strong></p>
-      <p>Jeśli urządzenie się nie uruchamia, nie jesteśmy w stanie go wycenić.</p>
+      <p>Niestety, urządzenie nie spełnia kryteriów pozwalających na jego wycenę.</p>
     </div>
 
     <div id="offerSummary" class="summary">
       <p><strong>Numer zlecenia:</strong> <span id="offerCode">-</span></p>
-      <p><strong>Cena:</strong> <span id="finalPrice">- zł</span></p>
-      <p>Kod i cena wygenerowane na podstawie odpowiedzi.</p>
+      <p><strong>Cena całkowita:</strong> <span id="finalPrice">- zł</span></p>
+      
+      <div class="price-calculation">
+        <h3>Szczegóły wyceny</h3>
+        <ul id="priceBreakdown">
+          <!-- Szczegóły wyceny będą wstawione dynamicznie przez JavaScript -->
+        </ul>
+      </div>
+      
       <a href="https://kompre.pl/kontakt" target="_blank" class="btn">Formularz kontaktowy</a>
     </div>
 
@@ -138,19 +172,62 @@
       const btnBack = document.getElementById('btn-back');
       const offerCode = document.getElementById('offerCode');
       const finalPrice = document.getElementById('finalPrice');
+      const priceBreakdown = document.getElementById('priceBreakdown');
       const businessMessage = document.getElementById('businessMessage');
       const valueEstimate = document.getElementById('valueEstimate');
       
       // Śledzenie aktualnego kroku
       let currentStep = 0;
       
-      // Mapa cen dla różnych kombinacji parametrów
-      const priceMap = {
-        '25MB':99,'25MW':98,'25MBZ':90,
-        '25WB':89,'25WBW':87,'25WBZ':85,
-        '20MB':78,'20MW':75,'20MBZ':69,
-        '20WB':79,'20WBW':79,'20WBZ':79
+      // Nowe reguły wyceny zgodnie z wymaganiami
+      const priceRules = {
+        basePrice: {
+          '2021-2025': 150,
+          '2016-2020': 100,
+          '<2016': 50
+        },
+        brand: {
+          'dell': 10,
+          'other': 0
+        },
+        power: {
+          'tak': 20,
+          'nie': 0
+        },
+        screen: {
+          'tak': 20,
+          'nie': 0
+        },
+        case: {
+          'jak nowa': 25,
+          'normalne ślady użytkowania': 10,
+          'pęknięcia lub brak klawiszy': 0
+        },
+        extras: {
+          'bateria': 10,
+          'zasilacz': 10,
+          'both': 20  // Specjalna wartość dla obu akcesoriów
+        }
       };
+
+      // Funkcja do generowania unikalnego kodu oferty
+      function generateOfferCode() {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const codeLength = 6;
+        let result = '';
+        
+        for (let i = 0; i < codeLength; i++) {
+          result += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        
+        // Dodaj aktualną datę jako prefiks
+        const now = new Date();
+        const dateStr = now.getFullYear().toString().substring(2) + 
+                      (now.getMonth() + 1).toString().padStart(2, '0') + 
+                      now.getDate().toString().padStart(2, '0');
+        
+        return dateStr + '-' + result;
+      }
 
       // Funkcja do pokazywania określonego kroku
       function showStep(i) {
@@ -179,11 +256,11 @@
       btnNext.addEventListener('click', () => {
         // Sprawdź czy wybrano odpowiedź
         const inputs = questions[currentStep].querySelectorAll('input');
-        if (![...inputs].some(i => i.checked)) {
+        if (![...inputs].some(i => i.checked) && inputs[0].type !== 'checkbox') {
           return alert('Proszę zaznaczyć odpowiedź.');
         }
 
-        // Sprawdź specjalne przypadki
+        // Specjalne przypadki
         // Przypadek 1: Firma
         if (currentStep === 0) {
           const clientType = document.querySelector('input[name="clientType"]:checked').value;
@@ -221,6 +298,44 @@
             return;
           }
         }
+        
+        // Przypadek 3: Ekran uszkodzony
+        if (currentStep === 4) {
+          const screenStatus = document.querySelector('input[name="screen"]:checked').value;
+          if (screenStatus === 'nie') {
+            // Ukryj wszystkie pytania
+            questions.forEach(q => q.classList.remove('active'));
+            specialMessages.forEach(m => m.classList.remove('active'));
+            summary.classList.remove('active');
+            
+            // Pokaż tylko komunikat o zerowej wartości
+            valueEstimate.classList.add('active');
+            
+            // Ukryj przyciski Dalej i Sprawdź wycenę
+            btnNext.style.display = 'none';
+            btnCalc.style.display = 'none';
+            return;
+          }
+        }
+        
+        // Przypadek 4: Obudowa uszkodzona
+        if (currentStep === 5) {
+          const caseStatus = document.querySelector('input[name="case"]:checked').value;
+          if (caseStatus === 'pęknięcia lub brak klawiszy') {
+            // Ukryj wszystkie pytania
+            questions.forEach(q => q.classList.remove('active'));
+            specialMessages.forEach(m => m.classList.remove('active'));
+            summary.classList.remove('active');
+            
+            // Pokaż tylko komunikat o zerowej wartości
+            valueEstimate.classList.add('active');
+            
+            // Ukryj przyciski Dalej i Sprawdź wycenę
+            btnNext.style.display = 'none';
+            btnCalc.style.display = 'none';
+            return;
+          }
+        }
 
         // Standardowe przejście do następnego pytania
         currentStep++;
@@ -235,18 +350,103 @@
 
       // Obsługa przycisku "Sprawdź wycenę"
       btnCalc.addEventListener('click', () => {
-        // Generowanie kodu oferty i ceny
-        const yearCode = form.year.value === '2021-2025' ? '25' : '20';
-        const caseCode = form.case.value === 'jak nowa' ? 'M' : 'W';
-        const extrasArr = [...form.querySelectorAll('input[name="extras"]:checked')].map(e => e.value);
-        let extrasCode = extrasArr.includes('bateria') && extrasArr.includes('zasilacz') ? 'Z'
-                      : extrasArr.includes('bateria') ? 'B'
-                      : 'W';
-        const code = yearCode + caseCode + extrasCode;
-
+        // Pobranie wszystkich wybranych wartości
+        const yearValue = document.querySelector('input[name="year"]:checked').value;
+        const brandValue = document.querySelector('input[name="brand"]:checked').value;
+        const powerValue = document.querySelector('input[name="power"]:checked').value;
+        const screenValue = document.querySelector('input[name="screen"]:checked').value;
+        const caseValue = document.querySelector('input[name="case"]:checked').value;
+        const extrasCheckboxes = document.querySelectorAll('input[name="extras"]:checked');
+        
+        // Inicjalizacja szczegółów wyceny
+        const priceDetails = [];
+        let totalPrice = 0;
+        
+        // 1. Cena bazowa zależna od rocznika
+        const basePrice = priceRules.basePrice[yearValue];
+        priceDetails.push({
+          description: `Laptop ${yearValue}`,
+          value: basePrice
+        });
+        totalPrice += basePrice;
+        
+        // 2. Dodatek za producenta
+        const brandBonus = priceRules.brand[brandValue];
+        priceDetails.push({
+          description: `Producent: ${brandValue === 'dell' ? 'Dell' : 'Inny'}`,
+          value: brandBonus
+        });
+        totalPrice += brandBonus;
+        
+        // 3. Dodatek za działanie
+        const powerBonus = priceRules.power[powerValue];
+        priceDetails.push({
+          description: `Urządzenie włącza się: ${powerValue === 'tak' ? 'TAK' : 'NIE'}`,
+          value: powerBonus
+        });
+        totalPrice += powerBonus;
+        
+        // 4. Dodatek za ekran
+        const screenBonus = priceRules.screen[screenValue];
+        priceDetails.push({
+          description: `Ekran działa poprawnie: ${screenValue === 'tak' ? 'TAK' : 'NIE'}`,
+          value: screenBonus
+        });
+        totalPrice += screenBonus;
+        
+        // 5. Dodatek za stan obudowy
+        const caseBonus = priceRules.case[caseValue];
+        priceDetails.push({
+          description: `Stan obudowy: ${caseValue}`,
+          value: caseBonus
+        });
+        totalPrice += caseBonus;
+        
+        // 6. Dodatek za akcesoria
+        let extrasBonus = 0;
+        const extras = [];
+        
+        extrasCheckboxes.forEach(checkbox => {
+          extras.push(checkbox.value);
+        });
+        
+        if (extras.includes('bateria') && extras.includes('zasilacz')) {
+          extrasBonus = priceRules.extras.both;
+          priceDetails.push({
+            description: 'Akcesoria: Bateria i zasilacz',
+            value: extrasBonus
+          });
+        } else {
+          extras.forEach(extra => {
+            extrasBonus += priceRules.extras[extra];
+            priceDetails.push({
+              description: `Akcesoria: ${extra === 'bateria' ? 'Bateria' : 'Zasilacz'}`,
+              value: priceRules.extras[extra]
+            });
+          });
+        }
+        totalPrice += extrasBonus;
+        
+        // Generowanie kodu oferty
+        const code = generateOfferCode();
+        
         // Aktualizacja podsumowania
         offerCode.innerText = code;
-        finalPrice.innerText = (priceMap[code] || 0) + ' zł';
+        finalPrice.innerText = totalPrice + ' zł';
+        
+        // Aktualizacja szczegółów wyceny
+        priceBreakdown.innerHTML = '';
+        priceDetails.forEach(detail => {
+          const li = document.createElement('li');
+          li.innerHTML = `<span>${detail.description}</span><span>+${detail.value} zł</span>`;
+          priceBreakdown.appendChild(li);
+        });
+        
+        // Dodanie podsumowania
+        const totalLi = document.createElement('li');
+        totalLi.className = 'total';
+        totalLi.innerHTML = `<span>RAZEM</span><span>${totalPrice} zł</span>`;
+        priceBreakdown.appendChild(totalLi);
 
         // Ukryj wszystkie pytania i komunikaty specjalne
         questions.forEach(q => q.classList.remove('active'));
