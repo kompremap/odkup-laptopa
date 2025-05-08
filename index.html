@@ -9,7 +9,7 @@
     #logo { text-align: center; margin-bottom: 10px; }
     #logo img { max-width: 200px; }
     #quiz { max-width: 600px; margin: auto; }
-    .question, .summary { display: none; opacity: 0; transition: opacity 0.3s ease; }
+    .question, .special-message, .summary { display: none; opacity: 0; transition: opacity 0.3s ease; }
     .active { display: block; opacity: 1; }
     .answer, .checkbox-label {
       display: block; width: 100%; margin: 10px 0; padding: 12px; font-size: 16px;
@@ -97,12 +97,12 @@
       </div>
     </form>
 
-    <div id="businessMessage" class="question">
+    <div id="businessMessage" class="special-message">
       <p>W przypadku odkupu większej liczby urządzeń prosimy o kontakt:</p>
       <p><a href="mailto:sklep@kompre.pl">sklep@kompre.pl</a></p>
     </div>
 
-    <div id="valueEstimate" class="question">
+    <div id="valueEstimate" class="special-message">
       <p><strong>Wartość Twojego urządzenia: 0 zł</strong></p>
       <p>Jeśli urządzenie się nie uruchamia, nie jesteśmy w stanie go wycenić.</p>
     </div>
@@ -126,20 +126,25 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      // Pobieranie referencji do elementów DOM
       const questions = document.querySelectorAll('.question');
-      const summary   = document.getElementById('offerSummary');
-      let currentStep = 0;
-      const form      = document.getElementById('buyback-form');
-      const btnPrev   = document.getElementById('btn-prev');
-      const btnNext   = document.getElementById('btn-next');
-      const btnCalc   = document.getElementById('btn-calculate');
-      const btnRefresh= document.getElementById('btn-refresh');
-      const btnBack   = document.getElementById('btn-back');
+      const specialMessages = document.querySelectorAll('.special-message');
+      const summary = document.getElementById('offerSummary');
+      const form = document.getElementById('buyback-form');
+      const btnPrev = document.getElementById('btn-prev');
+      const btnNext = document.getElementById('btn-next');
+      const btnCalc = document.getElementById('btn-calculate');
+      const btnRefresh = document.getElementById('btn-refresh');
+      const btnBack = document.getElementById('btn-back');
       const offerCode = document.getElementById('offerCode');
-      const finalPrice= document.getElementById('finalPrice');
+      const finalPrice = document.getElementById('finalPrice');
       const businessMessage = document.getElementById('businessMessage');
       const valueEstimate = document.getElementById('valueEstimate');
-
+      
+      // Śledzenie aktualnego kroku
+      let currentStep = 0;
+      
+      // Mapa cen dla różnych kombinacji parametrów
       const priceMap = {
         '25MB':99,'25MW':98,'25MBZ':90,
         '25WB':89,'25WBW':87,'25WBZ':85,
@@ -147,88 +152,118 @@
         '20WB':79,'20WBW':79,'20WBZ':79
       };
 
+      // Funkcja do pokazywania określonego kroku
       function showStep(i) {
-        // Ukryj wszystkie pytania, komunikaty specjalne i podsumowanie
-        [...questions, summary].forEach(el => el.classList.remove('active'));
-        // Ukryj specyficznie komunikaty biznesowe i wyceny
-        businessMessage.classList.remove('active');
-        valueEstimate.classList.remove('active');
+        // Ukryj wszystkie pytania i komunikaty specjalne
+        questions.forEach(q => q.classList.remove('active'));
+        specialMessages.forEach(m => m.classList.remove('active'));
+        summary.classList.remove('active');
         
         // Pokaż tylko aktualne pytanie
-        if (questions[i]) questions[i].classList.add('active');
+        if (questions[i]) {
+          questions[i].classList.add('active');
+        }
         
         // Konfiguracja przycisków
         btnPrev.style.display = i > 0 ? 'inline-block' : 'none';
         btnNext.style.display = i < questions.length - 1 ? 'inline-block' : 'none';
         btnCalc.style.display = i === questions.length - 1 ? 'inline-block' : 'none';
+        btnRefresh.style.display = 'inline-block';
+        btnBack.style.display = 'inline-block';
       }
 
+      // Inicjalizacja - pokazanie pierwszego pytania
       showStep(0);
 
+      // Obsługa przycisku "Dalej"
       btnNext.addEventListener('click', () => {
+        // Sprawdź czy wybrano odpowiedź
         const inputs = questions[currentStep].querySelectorAll('input');
         if (![...inputs].some(i => i.checked)) {
           return alert('Proszę zaznaczyć odpowiedź.');
         }
 
-        // Ukryj wszystkie specjalne komunikaty przed sprawdzeniem warunków
-        businessMessage.classList.remove('active');
-        valueEstimate.classList.remove('active');
-
-        // Logika dla pierwszego pytania (kto sprzedaje)
+        // Sprawdź specjalne przypadki
+        // Przypadek 1: Firma
         if (currentStep === 0) {
-          const selectedValue = document.querySelector('input[name="clientType"]:checked').value;
-          if (selectedValue === 'business') {
+          const clientType = document.querySelector('input[name="clientType"]:checked').value;
+          if (clientType === 'business') {
+            // Ukryj wszystkie pytania
+            questions.forEach(q => q.classList.remove('active'));
+            specialMessages.forEach(m => m.classList.remove('active'));
+            summary.classList.remove('active');
+            
+            // Pokaż tylko komunikat biznesowy
             businessMessage.classList.add('active');
+            
+            // Ukryj przyciski Dalej i Sprawdź wycenę
+            btnNext.style.display = 'none';
+            btnCalc.style.display = 'none';
             return;
           }
         }
-
-        // Logika dla pytania o włączanie się urządzenia
+        
+        // Przypadek 2: Urządzenie się nie włącza
         if (currentStep === 3) {
-          const powerValue = document.querySelector('input[name="power"]:checked').value;
-          if (powerValue === 'nie') {
+          const powerStatus = document.querySelector('input[name="power"]:checked').value;
+          if (powerStatus === 'nie') {
+            // Ukryj wszystkie pytania
+            questions.forEach(q => q.classList.remove('active'));
+            specialMessages.forEach(m => m.classList.remove('active'));
+            summary.classList.remove('active');
+            
+            // Pokaż tylko komunikat o zerowej wartości
             valueEstimate.classList.add('active');
+            
+            // Ukryj przyciski Dalej i Sprawdź wycenę
+            btnNext.style.display = 'none';
+            btnCalc.style.display = 'none';
             return;
           }
         }
 
+        // Standardowe przejście do następnego pytania
         currentStep++;
         showStep(currentStep);
       });
 
+      // Obsługa przycisku "Wstecz"
       btnPrev.addEventListener('click', () => {
         currentStep--;
         showStep(currentStep);
       });
 
+      // Obsługa przycisku "Sprawdź wycenę"
       btnCalc.addEventListener('click', () => {
+        // Generowanie kodu oferty i ceny
         const yearCode = form.year.value === '2021-2025' ? '25' : '20';
         const caseCode = form.case.value === 'jak nowa' ? 'M' : 'W';
-        const extrasArr = [...form.querySelectorAll('input[name="extras"]:checked')]
-                          .map(e => e.value);
+        const extrasArr = [...form.querySelectorAll('input[name="extras"]:checked')].map(e => e.value);
         let extrasCode = extrasArr.includes('bateria') && extrasArr.includes('zasilacz') ? 'Z'
-                       : extrasArr.includes('bateria') ? 'B'
-                       : 'W';
+                      : extrasArr.includes('bateria') ? 'B'
+                      : 'W';
         const code = yearCode + caseCode + extrasCode;
 
+        // Aktualizacja podsumowania
         offerCode.innerText = code;
         finalPrice.innerText = (priceMap[code] || 0) + ' zł';
 
         // Ukryj wszystkie pytania i komunikaty specjalne
-        [...questions].forEach(q => q.classList.remove('active'));
-        businessMessage.classList.remove('active');
-        valueEstimate.classList.remove('active');
+        questions.forEach(q => q.classList.remove('active'));
+        specialMessages.forEach(m => m.classList.remove('active'));
         
         // Pokaż podsumowanie
         summary.classList.add('active');
         
-        // Ukryj przyciski "Dalej" i "Sprawdź wycenę", pokaż tylko "Wstecz"
+        // Dostosuj przyciski
         btnNext.style.display = 'none';
         btnCalc.style.display = 'none';
       });
 
+      // Obsługa przycisku "Odśwież"
       btnRefresh.addEventListener('click', () => location.reload());
+      
+      // Obsługa przycisku "Powrót"
       btnBack.addEventListener('click', () => location.href = 'https://kompre.pl');
     });
   </script>
