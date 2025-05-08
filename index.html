@@ -33,6 +33,40 @@
       font-size: 20px; font-weight: bold; background: #eee; padding: 10px;
       border-radius: 6px; display: inline-block; margin: 10px 0;
     }
+    .contact-btn {
+      display: block;
+      width: 250px;
+      margin: 20px auto;
+      padding: 12px 20px;
+      font-size: 16px;
+      text-align: center;
+      text-decoration: none;
+      background-color: #f5f5f5;
+      color: #333;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .contact-btn:hover {
+      background-color: #e0e0e0;
+    }
+    .instruction-box {
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .instruction-box p {
+      margin: 10px 0;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    .instruction-box strong {
+      color: #333;
+    }
   </style>
 </head>
 <body>
@@ -110,7 +144,14 @@
     <div id="offerSummary" class="summary">
       <p><strong>Numer zlecenia:</strong> <span id="offerCode">-</span></p>
       <p><strong>Cena całkowita:</strong> <span id="finalPrice">- zł</span></p>
-      <a href="https://kompre.pl/kontakt" target="_blank" class="btn">Formularz kontaktowy</a>
+      
+      <div class="instruction-box">
+        <p><strong>Jak sprzedać ten laptop?</strong></p>
+        <p>Kliknij przycisk "Formularz kontaktowy" poniżej i prześlij nam wiadomość, umieszczając kod zlecenia w tytule.</p>
+        <p>Nasz zespół skontaktuje się z Tobą w celu finalizacji transakcji.</p>
+      </div>
+      
+      <a href="https://kompre.pl/kontakt" target="_blank" class="contact-btn">Formularz kontaktowy</a>
     </div>
 
     <div id="controls">
@@ -175,14 +216,46 @@
         }
       };
 
+      // Kody odpowiadające poszczególnym odpowiedziom
+      const answerCodes = {
+        year: {
+          '2021-2025': 'A',
+          '2016-2020': 'B',
+          '<2016': 'C'
+        },
+        brand: {
+          'dell': 'D',
+          'other': 'O'
+        },
+        power: {
+          'tak': 'P',
+          'nie': 'N'
+        },
+        screen: {
+          'tak': 'S',
+          'nie': 'X'
+        },
+        case: {
+          'jak nowa': 'J',
+          'normalne ślady użytkowania': 'U',
+          'pęknięcia lub brak klawiszy': 'Z'
+        },
+        extras: {
+          'none': '0',
+          'bateria': 'B',
+          'zasilacz': 'Z',
+          'both': 'T'
+        }
+      };
+
       // Funkcja do generowania unikalnego kodu oferty
       function generateOfferCode() {
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        const codeLength = 6;
-        let result = '';
+        const codeLength = 3;
+        let randomPart = '';
         
         for (let i = 0; i < codeLength; i++) {
-          result += characters.charAt(Math.floor(Math.random() * characters.length));
+          randomPart += characters.charAt(Math.floor(Math.random() * characters.length));
         }
         
         // Dodaj aktualną datę jako prefiks
@@ -191,7 +264,40 @@
                       (now.getMonth() + 1).toString().padStart(2, '0') + 
                       now.getDate().toString().padStart(2, '0');
         
-        return dateStr + '-' + result;
+        // Pobierz wybory użytkownika
+        const yearValue = document.querySelector('input[name="year"]:checked').value;
+        const brandValue = document.querySelector('input[name="brand"]:checked').value;
+        const powerValue = document.querySelector('input[name="power"]:checked').value;
+        const screenValue = document.querySelector('input[name="screen"]:checked').value;
+        const caseValue = document.querySelector('input[name="case"]:checked').value;
+        const extrasCheckboxes = document.querySelectorAll('input[name="extras"]:checked');
+        
+        // Ustal kod dla akcesoriów
+        let extrasCode;
+        const extras = [];
+        extrasCheckboxes.forEach(checkbox => {
+          extras.push(checkbox.value);
+        });
+        
+        if (extras.includes('bateria') && extras.includes('zasilacz')) {
+          extrasCode = answerCodes.extras.both;
+        } else if (extras.includes('bateria')) {
+          extrasCode = answerCodes.extras.bateria;
+        } else if (extras.includes('zasilacz')) {
+          extrasCode = answerCodes.extras.zasilacz;
+        } else {
+          extrasCode = answerCodes.extras.none;
+        }
+        
+        // Stwórz kod zawierający informacje o wyborach
+        const selectionCode = answerCodes.year[yearValue] + 
+                             answerCodes.brand[brandValue] + 
+                             answerCodes.power[powerValue] + 
+                             answerCodes.screen[screenValue] + 
+                             answerCodes.case[caseValue] + 
+                             extrasCode;
+        
+        return dateStr + '-' + selectionCode + '-' + randomPart;
       }
 
       // Funkcja do pokazywania określonego kroku
@@ -362,7 +468,7 @@
         }
         totalPrice += extrasBonus;
         
-        // Generowanie kodu oferty
+        // Generowanie kodu oferty z informacjami o wybranych opcjach
         const code = generateOfferCode();
         
         // Aktualizacja podsumowania
