@@ -74,8 +74,53 @@
         <label class="answer"><input type="radio" name="clientType" value="business"> Firma – mam więcej niż jedno urządzenie</label>
       </div>
 
-      <!-- ... (pozostałe pytania) ... -->
+      <!-- 2. Rocznik laptopa -->
+      <div id="question1" class="question">
+        <p><strong>2. Rocznik laptopa</strong></p>
+        <label class="answer"><input type="radio" name="year" value="2021-2025" required> 2021 – 2025</label>
+        <label class="answer"><input type="radio" name="year" value="2020-2016"> 2020 – 2016</label>
+        <label class="answer"><input type="radio" name="year" value="<2016"> Starsze niż 2016</label>
+      </div>
 
+      <!-- 3. Producent laptopa -->
+      <div id="question2" class="question">
+        <p><strong>3. Producent laptopa</strong></p>
+        <label class="answer"><input type="radio" name="brand" value="main" required> Dell, HP, Lenovo, Fujitsu, Toshiba, Samsung</label>
+        <label class="answer"><input type="radio" name="brand" value="other"> Inny</label>
+      </div>
+
+      <!-- 4. Power -->
+      <div id="question3" class="question">
+        <p><strong>4. Czy urządzenie się włącza i działa przez minimum 10 sekund?</strong></p>
+        <label class="answer"><input type="radio" name="power" value="tak" required> Tak</label>
+        <label class="answer"><input type="radio" name="power" value="nie"> Nie</label>
+      </div>
+
+      <!-- 5. Stan ekranu -->
+      <div id="question4" class="question">
+        <p><strong>5. Czy ekran spełnia oba poniższe kryteria?</strong></p>
+        <ul>
+          <li>Ekran i podświetlenie się włączają</li>
+          <li>Brak uszkodzeń (pęknięcia, odklejająca się powłoka, migotanie, pasy)</li>
+        </ul>
+        <label class="answer"><input type="radio" name="screen" value="tak" required> Tak</label>
+        <label class="answer"><input type="radio" name="screen" value="nie"> Nie</label>
+      </div>
+
+      <!-- 6. Stan obudowy -->
+      <div id="question5" class="question">
+        <p><strong>6. Stan obudowy</strong></p>
+        <label class="answer"><input type="radio" name="case" value="jak nowa" required> Jak nowa</label>
+        <label class="answer"><input type="radio" name="case" value="normalne ślady użytkowania"> Normalne ślady użytkowania</label>
+        <label class="answer"><input type="radio" name="case" value="pęknięcia lub brak klawiszy"> Pęknięcia lub brak klawiszy</label>
+      </div>
+
+      <!-- 7. Zestaw -->
+      <div id="question6" class="question">
+        <p><strong>7. W zestawie</strong><br>Wybierz elementy, które działają sprawnie (np. bateria działa min. 30 minut):</p>
+        <label class="checkbox-label"><input type="checkbox" name="extras" value="bateria"> Bateria (sprawna, min. 30 minut działania)</label>
+        <label class="checkbox-label"><input type="checkbox" name="extras" value="zasilacz"> Zasilacz</label>
+      </div>
     </form>
 
     <div id="businessMessage">
@@ -90,9 +135,9 @@
 
     <div id="offerSummary">
       <p><strong>Wartość Twojego urządzenia: <span id="finalValue">0 zł</span></strong></p>
-      <p>Twój numer:</p>
+      <p>Twój unikalny kod rabatowy:</p>
       <div id="offerCode">KOMP-LAP-XYZ123</div>
-      <p>Jeśli chcesz sprzedać swój laptop, kliknij poniżej i prześlij nam wiadomość z tym kodem w tytule.</p>
+      <p>Jeśli chcesz sprzedać ten laptop, kliknij poniżej i prześlij nam wiadomość z tym kodem w tytule.</p>
       <a href="https://kompre.pl/kontakt" target="_blank" class="btn">Przejdź do formularza kontaktowego</a>
     </div>
 
@@ -130,76 +175,4 @@
 
         document.getElementById('btn-prev').style.display = step > 0 ? 'inline-block' : 'none';
         document.getElementById('btn-next').style.display = (step < questions.length - 1) ? 'inline-block' : 'none';
-        document.getElementById('btn-calculate').style.display = (questions[step]?.id === 'question6') ? 'inline-block' : 'none';
-      };
-
-      showStep(currentStep);
-
-      document.getElementById('btn-next').addEventListener('click', () => {
-        const inputs = questions[currentStep].querySelectorAll('input');
-        if (!Array.from(inputs).some(i => i.checked)) return alert('Proszę zaznaczyć odpowiedź.');
-
-        if (currentStep === 0 && form.clientType.value === 'business') {
-          questions.forEach(q => q.style.display = 'none');
-          document.getElementById('btn-prev').style.display = 'none';
-          document.getElementById('btn-next').style.display = 'none';
-          document.getElementById('btn-calculate').style.display = 'none';
-          businessMessage.style.display = 'block';
-          return;
-        }
-
-        if (currentStep === 3 && form.power.value === 'nie') {
-          questions.forEach(q => q.style.display = 'none');
-          document.getElementById('btn-prev').style.display = 'none';
-          document.getElementById('btn-next').style.display = 'none';
-          document.getElementById('btn-calculate').style.display = 'none';
-          valueEstimate.style.display = 'block';
-          return;
-        }
-
-        currentStep++;
-        showStep(currentStep);
-      });
-
-      document.getElementById('btn-prev').addEventListener('click', () => {
-        currentStep--;
-        showStep(currentStep);
-      });
-
-      document.getElementById('btn-calculate').addEventListener('click', () => {
-        let value = 0;
-
-        if (form.year.value === '2021-2025') value += 500;
-        else if (form.year.value === '2020-2016') value += 300;
-        else value += 100;
-
-        if (form.screen.value === 'tak') value += 150;
-        if (form.case.value === 'jak nowa') value += 150;
-        else if (form.case.value === 'normalne ślady użytkowania') value += 100;
-        const extras = form.querySelectorAll('input[name="extras"]:checked');
-        extras.forEach(e => value += (e.value === 'bateria') ? 50 : 30);
-
-        finalValue.innerText = value + ' zł';
-
-        const code = 'KOMP-LAP-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-        offerCode.innerText = code;
-
-        questions.forEach(q => q.style.display = 'none');
-        document.getElementById('btn-prev').style.display = 'none';
-        document.getElementById('btn-next').style.display = 'none';
-        document.getElementById('btn-calculate').style.display = 'none';
-        offerSummary.style.display = 'block';
-      });
-
-      document.getElementById('btn-back').addEventListener('click', () => {
-        window.location.href = 'https://kompre.pl';
-      });
-
-      // Odświeżanie strony
-      document.getElementById('btn-refresh').addEventListener('click', () => {
-        location.reload();
-      });
-    });
-  </script>
-</body>
-</html>
+        document.getElementById
