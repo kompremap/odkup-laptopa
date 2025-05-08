@@ -26,49 +26,24 @@
     }
     .answer:hover, .checkbox-label:hover { background-color: #e0e0e0; }
     #controls { max-width: 600px; margin: 20px auto; text-align: center; }
-    .btn {
-      margin: 5px;
-      padding: 10px 20px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background-color: #f5f5f5;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
+    .btn { margin: 5px; padding: 10px 20px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; background-color: #f5f5f5; cursor: pointer; transition: background 0.3s ease; }
     .btn:hover { background-color: #e0e0e0; }
-    #loading-spinner {
-      display: none;
-      margin: 20px auto;
-      width: 50px;
-      height: 50px;
-      border: 5px solid #f3f3f3;
-      border-top: 5px solid #3498db;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+    #loading-spinner { display: none; margin: 20px auto; width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     #businessMessage, #valueEstimate { text-align: center; font-size: 18px; display: none; }
     #offerSummary { display: none; text-align: center; margin-top: 30px; }
-    #offerSummary p { font-size: 18px; }
-    #offerCode { font-size: 20px; font-weight: bold; background: #eee; padding: 10px; border-radius: 6px; display: inline-block; margin: 10px 0; }
+    #offerSummary p { font-size: 18px; margin: 5px 0; }
+    #offerCode, #finalPrice { font-size: 20px; font-weight: bold; background: #eee; padding: 10px; border-radius: 6px; display: inline-block; margin: 10px 0; }
   </style>
 </head>
 <body>
-  <div id="logo">
-    <img src="https://kompre.pl/skins/store_user/store_9cd390f998d36daee08a824eb4f4c853_1/images/logo.png" alt="Kompre logo">
-  </div>
+  <div id="logo"><img src="https://kompre.pl/skins/store_user/store_9cd390f998d36daee08a824eb4f4c853_1/images/logo.png" alt="Kompre logo"></div>
   <div id="quiz">
     <form id="buyback-form">
       <!-- 1. Typ klienta -->
       <div id="question0" class="question active">
         <p><strong>1. Kto sprzedaje laptopa?</strong></p>
-        <p style="font-size:16px;color:#555;margin-bottom:10px;">
-          Sprzedaj laptopa, a my odwdzięczymy się kodem rabatowym na zakupy w <strong>Kompre.pl</strong>!
-        </p>
+        <p style="font-size:16px;color:#555;margin-bottom:10px;">Sprzedaj laptopa, a my odwdzięczymy się kodem rabatowym na zakupy w <strong>Kompre.pl</strong>!</p>
         <label class="answer"><input type="radio" name="clientType" value="private" required> Osoba prywatna – mam jedno urządzenie</label>
         <label class="answer"><input type="radio" name="clientType" value="business"> Firma – mam więcej niż jedno urządzenie</label>
       </div>
@@ -79,7 +54,7 @@
         <label class="answer"><input type="radio" name="year" value="2016-2020"> 2016 – 2020</label>
         <label class="answer"><input type="radio" name="year" value="<2016"> Starsze niż 2016</label>
       </div>
-      <!-- 3. Producent laptopa -->
+      <!-- 3. Producent -->
       <div id="question2" class="question">
         <p><strong>3. Producent laptopa</strong></p>
         <label class="answer"><input type="radio" name="brand" value="main" required> Dell, HP, Lenovo, Fujitsu, Toshiba, Samsung</label>
@@ -94,19 +69,16 @@
       <!-- 5. Stan ekranu -->
       <div id="question4" class="question">
         <p><strong>5. Czy ekran spełnia oba poniższe kryteria?</strong></p>
-        <ul>
-          <li>Ekran i podświetlenie się włączają</li>
-          <li>Brak uszkodzeń (pęknięcięć, odklejającej się powłoki, migotaniu, pasów)</li>
-        </ul>
+        <ul><li>Ekran i podświetlenie się włączają</li><li>Brak uszkodzeń (pęknięcia, odklejająca się powłoka, migotanie, pasy)</li></ul>
         <label class="answer"><input type="radio" name="screen" value="tak" required> Tak</label>
         <label class="answer"><input type="radio" name="screen" value="nie"> Nie</label>
       </div>
-      <!-- 6. Stan -->
+      <!-- 6. Stan obudowy -->
       <div id="question5" class="question">
-        <p><strong>6. Stan</strong></p>
-        <label class="answer"><input type="radio" name="case" value="jak nowa" required> Małe ślady użytkowania </label>
-        <label class="answer"><input type="radio" name="case" value="normalne ślady użytkowania"> Większe ślady użytkowania </label>
-        <label class="answer"><input type="radio" name="case" value="pęknięcia lub brak klawiszy"> Możliwe pęknięcia, brak klawiszy lub inne wady</label>
+        <p><strong>6. Stan obudowy</strong></p>
+        <label class="answer"><input type="radio" name="case" value="jak nowa" required> Jak nowa</label>
+        <label class="answer"><input type="radio" name="case" value="normalne ślady użytkowania"> Normalne ślady użytkowania</label>
+        <label class="answer"><input type="radio" name="case" value="pęknięcia lub brak klawiszy"> Pęknięcia lub brak klawiszy</label>
       </div>
       <!-- 7. Zestaw -->
       <div id="question6" class="question">
@@ -115,19 +87,12 @@
         <label class="checkbox-label"><input type="checkbox" name="extras" value="zasilacz"> Zasilacz</label>
       </div>
     </form>
-    <div id="businessMessage">
-      <p>W przypadku odkupu większej liczby urządzeń prosimy o kontakt:</p>
-      <p><a href="mailto:sklep@kompre.pl">sklep@kompre.pl</a></p>
-    </div>
-    <div id="valueEstimate">
-      <p><strong>Wartość Twojego urządzenia: 0 zł</strong></p>
-      <p>Jeśli urządzenie się nie uruchamia, nie jesteśmy w stanie go wycenić.</p>
-    </div>
+    <div id="businessMessage"><p>W przypadku odkupu większej liczby urządzeń prosimy o kontakt:</p><p><a href="mailto:sklep@kompre.pl">sklep@kompre.pl</a></p></div>
+    <div id="valueEstimate"><p><strong>Wartość Twojego urządzenia: 0 zł</strong></p><p>Jeśli urządzenie się nie uruchamia, nie jesteśmy w stanie go wycenić.</p></div>
     <div id="offerSummary">
-      <p><strong>Wartość Twojego urządzenia: <span id="finalValue">0 zł</span></strong></p>
-      <p>Twój numer zlecenia </p>
-      <div id="offerCode">KOMP-LAP-XYZ123</div>
-      <p>Jeśli chcesz sprzedać ten laptop, kliknij poniżej i prześlij nam wiadomość z tym kodem w tytule.</p>
+      <p><strong>Numer zlecenia:</strong> <span id="offerCode">-</span></p>
+      <p><strong>Cena:</strong> <span id="finalPrice">- zł</span></p>
+      <p>Jeśli chcesz sprzedać ten laptop, kliknij poniżej i prześlij nam wiadomość z tym numerem w tytule.</p>
       <a href="https://kompre.pl/kontakt" target="_blank" class="btn">Przejdź do formularza kontaktowego</a>
     </div>
     <div id="controls">
@@ -146,7 +111,7 @@
       const businessMessage = document.getElementById('businessMessage');
       const valueEstimate = document.getElementById('valueEstimate');
       const offerSummary = document.getElementById('offerSummary');
-      const finalValue = document.getElementById('finalValue');
+      const finalPrice = document.getElementById('finalPrice');
       const offerCode = document.getElementById('offerCode');
       const form = document.getElementById('buyback-form');
       const btnPrev = document.getElementById('btn-prev');
@@ -155,58 +120,57 @@
       const btnRefresh = document.getElementById('btn-refresh');
       const btnBack = document.getElementById('btn-back');
 
+      // Mapa cen i kodów
+      const priceMap = {
+        '25MB': 99, '25MW': 98, '25MBZ': 90,
+        '25WB': 89, '25WBW': 87, '25WBZ': 85,
+        '20MB': 78, '20MW': 75, '20MBZ': 69,
+        '20WB': 79, '20WBW': 79, '20WBZ': 79
+      };
+
       function showStep(step) {
         questions.forEach(q => q.classList.remove('active'));
         businessMessage.style.display = valueEstimate.style.display = offerSummary.style.display = 'none';
-
-        if (questions[step]) {
-          questions[step].classList.add('active');
-        }
+        if (questions[step]) questions[step].classList.add('active');
         btnPrev.style.display = step > 0 ? 'inline-block' : 'none';
         if (step < questions.length - 1) {
-          btnNext.style.display = 'inline-block';
-          btnCalc.style.display = 'none';
+          btnNext.style.display = 'inline-block'; btnCalc.style.display = 'none';
         } else {
-          btnNext.style.display = 'none';
-          btnCalc.style.display = 'inline-block';
+          btnNext.style.display = 'none'; btnCalc.style.display = 'inline-block';
         }
       }
-
       showStep(0);
 
       btnNext.addEventListener('click', () => {
         const inputs = questions[currentStep].querySelectorAll('input');
         if (![...inputs].some(i => i.checked)) return alert('Proszę zaznaczyć odpowiedź.');
         if (currentStep === 0 && form.clientType.value === 'business') {
-          questions.forEach(q => q.classList.remove('active'));
-          businessMessage.style.display = 'block';
-          return;
+          questions.forEach(q => q.classList.remove('active')); businessMessage.style.display = 'block'; return;
         }
         if (currentStep === 3 && form.power.value === 'nie') {
-          questions.forEach(q => q.classList.remove('active'));
-          valueEstimate.style.display = 'block';
-          return;
+          questions.forEach(q => q.classList.remove('active')); valueEstimate.style.display = 'block'; return;
         }
-        currentStep++;
-        showStep(currentStep);
+        currentStep++; showStep(currentStep);
       });
 
-      btnPrev.addEventListener('click', () => {
-        currentStep--;
-        showStep(currentStep);
-      });
+      btnPrev.addEventListener('click', () => { currentStep--; showStep(currentStep); });
 
       btnCalc.addEventListener('click', () => {
-        let value = 0;
-        if (form.year.value === '2021-2025') value += 500;
-        else if (form.year.value === '2016-2020') value += 300;
-        else value += 100;
-        if (form.screen.value === 'tak') value += 150;
-        if (form.case.value === 'jak nowa') value += 150;
-        else if (form.case.value === 'normalne ślady użytkowania') value += 100;
-        [...form.querySelectorAll('input[name="extras"]:checked')].forEach(e => value += e.value === 'bateria' ? 50 : 30);
-        finalValue.innerText = value + ' zł';
-        offerCode.innerText = 'KOMP-LAP-' + Math.random().toString(36).substr(2,6).toUpperCase();
+        // Klucze
+        const yearCode = form.year.value === '2021-2025' ? '25' : form.year.value === '2016-2020' ? '20' : null;
+        const caseCode = form.case.value === 'jak nowa' ? 'M' : form.case.value === 'normalne ślady użytkowania' ? 'W' : null;
+        const extrasChecked = [...form.querySelectorAll('input[name="extras"]:checked')].map(e=>e.value);
+        let extrasCode;
+        if (extrasChecked.includes('bateria') && extrasChecked.includes('zasilacz')) extrasCode = 'Z';
+        else if (extrasChecked.includes('bateria')) extrasCode = 'B';
+        else if (extrasChecked.includes('zasilacz')) extrasCode = 'W';
+
+        const code = yearCode && caseCode && extrasCode ? yearCode + caseCode + extrasCode : 'BRK';
+        const price = priceMap[code] || 0;
+
+        offerCode.innerText = code;
+        finalPrice.innerText = price + ' zł';
+
         questions.forEach(q => q.classList.remove('active'));
         offerSummary.style.display = 'block';
       });
